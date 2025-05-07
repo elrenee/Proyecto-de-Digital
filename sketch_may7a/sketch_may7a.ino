@@ -50,12 +50,12 @@ void loop()
   servom3.write(angulo3);
   servom4.write(angulo4);
 
-  Serial.print("Angulo1:");
-  Serial.println(angulo1);
-  Serial.print("Angulo2:");
-  Serial.println(angulo2);
-  Serial.print("Angulo3:");
-  Serial.println(angulo3);
-  Serial.print("Angulo4:");
+  Serial.print("Angulo1: ");
+  Serial.print(angulo1);
+  Serial.print(" Angulo2: ");
+  Serial.print(angulo2);
+  Serial.print(" Angulo3: ");
+  Serial.print(angulo3);
+  Serial.print(" Angulo4: ");
   Serial.println(angulo4);
 }
