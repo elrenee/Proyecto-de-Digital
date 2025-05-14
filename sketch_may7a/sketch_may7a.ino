@@ -24,6 +24,16 @@ int angulo3=0;
 int angulo4=0;
 
 int modo=1;
+struct ConfiguracionServos 
+{
+  int servo1;
+  int servo2;
+  int servo3;
+  int servo4;
+};
+
+ConfiguracionServos configuraciones[4];
+int configuracionActual = 0;
 
 Servo servom1;
 Servo servom2;
@@ -37,6 +47,13 @@ void setup() {
   servom2.attach(servo2);//La salida del servo1 en el pin 9
   servom3.attach(servo3);//La salida del servo1 en el pin 10
   servom4.attach(servo4);//La salida del servo1 en el pin 11
+  // Inicializar todas las configuraciones a 0
+  for (int i = 0; i < 4; i++) {
+    configuraciones[i].servo1 = 0;
+    configuraciones[i].servo2 = 0;
+    configuraciones[i].servo3 = 0;
+    configuraciones[i].servo4 = 0;
+  }
 }
 
 void loop() 
@@ -75,7 +92,13 @@ void loop()
     case 2:
       if(digitalRead(guardar)==LOW)
       {
-        //Guardamos
+        // Guardamos la configuración actual
+          configuraciones[configuracionActual].servo1 = angulo1;
+          configuraciones[configuracionActual].servo2 = angulo2;
+          configuraciones[configuracionActual].servo3 = angulo3;
+          configuraciones[configuracionActual].servo4 = angulo4;
+      
+          configuracionActual=(configuracionActual +1)%4;
       }
       if(digitalRead(reproducir)==LOW)
       {
