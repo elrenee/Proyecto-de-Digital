@@ -9,6 +9,10 @@ const int control2=A2;
 const int control3=A3;
 const int control4=A4;
 
+const int cambiomodo=4;
+const int guardar=5;
+const int reproducir=6;
+
 int adc1=0;
 int adc2=0;
 int adc3=0;
@@ -18,6 +22,8 @@ int angulo1=0;
 int angulo2=0;
 int angulo3=0;
 int angulo4=0;
+
+int modo=1;
 
 Servo servom1;
 Servo servom2;
@@ -44,12 +50,39 @@ void loop()
   angulo2=map(adc2,0, 1023, 0, 180);
   angulo3=map(adc3,0, 1023, 0, 180);
   angulo4=map(adc4,0, 1023, 0, 180);
-
-  servom1.write(angulo1);
-  servom2.write(angulo2);
-  servom3.write(angulo3);
-  servom4.write(angulo4);
-
+  if(digitalRead(cambiomodo)==LOW)
+  {
+    if(modo==1)
+    {
+      modo=2;
+    }
+    else if(modo==2)
+    {
+      modo=1;
+    }
+  }else if(digitalRead(cambiomodo)==HIGH)
+  {
+    modo=modo;
+  }
+  switch(modo)
+  {
+    case 1:
+      servom1.write(angulo1);
+      servom2.write(angulo2);
+      servom3.write(angulo3);
+      servom4.write(angulo4);
+      break;
+    case 2:
+      if(digitalRead(guardar)==LOW)
+      {
+        //Guardamos
+      }
+      if(digitalRead(reproducir)==LOW)
+      {
+      
+      }
+      break;
+  }
   Serial.print("Angulo1: ");
   Serial.print(angulo1);
   Serial.print(" Angulo2: ");
