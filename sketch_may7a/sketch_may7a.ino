@@ -1,4 +1,7 @@
 #include <Servo.h>
+const int ledPin = 7; //Indicador de slot
+
+
 const int servo2=9;
 const int servo3=10;
 const int servo4=11;
@@ -24,6 +27,7 @@ int angulo3=0;
 int angulo4=0;
 
 int modo=1;
+
 struct ConfiguracionServos 
 {
   int servo1;
@@ -34,6 +38,7 @@ struct ConfiguracionServos
 
 ConfiguracionServos configuraciones[4];
 int configuracionActual = 0;
+int indiceReproduccion = 0;
 
 Servo servom1;
 Servo servom2;
@@ -54,64 +59,109 @@ void setup() {
     configuraciones[i].servo3 = 0;
     configuraciones[i].servo4 = 0;
   }
+  pinMode(ledPin, OUTPUT);
+  pinMode(cambiomodo, INPUT_PULLUP);
+  pinMode(guardar, INPUT_PULLUP);
+  pinMode(reproducir, INPUT_PULLUP);
 }
 
 void loop() 
 {
-  adc1=analogRead(control1); //Leemos los adc´s
-  adc2=analogRead(control2); //Leemos los adc´s
-  adc3=analogRead(control3); //Leemos los adc´s
-  adc4=analogRead(control4); //Leemos los adc´s
-
-  angulo1=map(adc1,0, 1023, 0, 180);
-  angulo2=map(adc2,0, 1023, 0, 180);
-  angulo3=map(adc3,0, 1023, 0, 180);
-  angulo4=map(adc4,0, 1023, 0, 180);
   if(digitalRead(cambiomodo)==LOW)
   {
-    if(modo==1)
+    delay(200);
+    if(digitalRead(cambiomodo)==LOW)
     {
-      modo=2;
+      delay(200);
+      if(digitalRead(cambiomodo)==LOW) 
+      {
+        modo = (modo == 1) ? 2 : 1;
+      }
     }
-    else if(modo==2)
-    {
-      modo=1;
-    }
-  }else if(digitalRead(cambiomodo)==HIGH)
-  {
-    modo=modo;
   }
+ 
   switch(modo)
   {
     case 1:
+      adc1=analogRead(control1); //Leemos los adc´s
+      adc3=analogRead(control3); //Leemos los adc´s
+      adc2=analogRead(control2); //Leemos los adc´s
+      adc4=analogRead(control4); //Leemos los adc´s
+      angulo2=map(adc2,0, 1023, 0, 180);
+      angulo3=map(adc3,0, 1023, 0, 180);
+      angulo4=map(adc4,0, 1023, 0, 180);
+      angulo1=map(adc1,0, 1023, 0, 180);
       servom1.write(angulo1);
       servom2.write(angulo2);
       servom3.write(angulo3);
       servom4.write(angulo4);
+      Serial.print("Angulo1: ");
+      Serial.print(angulo1);
+      Serial.print(" Angulo2: ");
+      Serial.print(angulo2);
+      Serial.print(" Angulo3: ");
+      Serial.print(angulo3);
+      Serial.print(" Angulo4: ");
+      Serial.println(angulo4);
       break;
     case 2:
       if(digitalRead(guardar)==LOW)
       {
-        // Guardamos la configuración actual
+        delay(200);//Antirebote
+        if(digitalRead(guardar)==LOW)
+        {
+          
           configuraciones[configuracionActual].servo1 = angulo1;
           configuraciones[configuracionActual].servo2 = angulo2;
           configuraciones[configuracionActual].servo3 = angulo3;
           configuraciones[configuracionActual].servo4 = angulo4;
-      
+
+          for (int i=0; i<= configuracionActual; i++ )//Indicador de poscicion guardada
+          {
+            digitalWrite(ledPin, HIGH);
+            delay(150);
+            digitalWrite(ledPin, LOW);
+            delay(150);
+          }
           configuracionActual=(configuracionActual +1)%4;
+          Serial.print("Angulo1: ");
+          Serial.print(angulo1);
+          Serial.print(" Angulo2: ");
+          Serial.print(angulo2);
+          Serial.print(" Angulo3: ");
+          Serial.print(angulo3);
+          Serial.print(" Angulo4: ");
+          Serial.println(angulo4);
+      
+        }
       }
       if(digitalRead(reproducir)==LOW)
       {
-      
+        delay(200); // Antirrebote
+        if (digitalRead(reproducir) == LOW) 
+        {
+          servom1.write(configuraciones[indiceReproduccion].servo1);
+          servom2.write(configuraciones[indiceReproduccion].servo2);
+          servom3.write(configuraciones[indiceReproduccion].servo3);
+          servom4.write(configuraciones[indiceReproduccion].servo4);
+          Serial.print("Angulo1: ");
+          Serial.print(configuraciones[indiceReproduccion].servo1);
+          Serial.print(" Angulo2: ");
+          Serial.print(configuraciones[indiceReproduccion].servo2);
+          Serial.print(" Angulo3: ");
+          Serial.print(configuraciones[indiceReproduccion].servo3);
+          Serial.print(" Angulo4: ");
+          Serial.println(configuraciones[indiceReproduccion].servo4);
+          for (int i = 0; i <= indiceReproduccion; i++)
+          {
+           digitalWrite(ledPin, HIGH);  
+           delay(150);
+           digitalWrite(ledPin, LOW);
+           delay(150);
+          }
+          indiceReproduccion = (indiceReproduccion + 1) % 4;
+        }
       }
       break;
   }
-  Serial.print("Angulo1: ");
-  Serial.print(angulo1);
-  Serial.print(" Angulo2: ");
-  Serial.print(angulo2);
-  Serial.print(" Angulo3: ");
-  Serial.print(angulo3);
-  Serial.print(" Angulo4: ");
-  Serial.println(angulo4);
 }
