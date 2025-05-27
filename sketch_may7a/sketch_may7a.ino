@@ -1,6 +1,6 @@
 #include <Servo.h>
 const int ledPin = 7; //Indicador de slot
-
+const int ledmodo = 8; //Indicador de Modo.
 
 const int servo2=9;
 const int servo3=10;
@@ -60,6 +60,7 @@ void setup() {
     configuraciones[i].servo4 = 0;
   }
   pinMode(ledPin, OUTPUT);
+  pinMode(ledmodo, OUTPUT);
   pinMode(cambiomodo, INPUT_PULLUP);
   pinMode(guardar, INPUT_PULLUP);
   pinMode(reproducir, INPUT_PULLUP);
@@ -69,20 +70,17 @@ void loop()
 {
   if(digitalRead(cambiomodo)==LOW)
   {
-    delay(200);
+    delay(100);
     if(digitalRead(cambiomodo)==LOW)
     {
-      delay(200);
-      if(digitalRead(cambiomodo)==LOW) 
-      {
-        modo = (modo == 1) ? 2 : 1;
-      }
+      modo = (modo == 1) ? 2 : 1;
     }
   }
  
   switch(modo)
   {
     case 1:
+      digitalWrite(ledmodo, HIGH);
       adc1=analogRead(control1); //Leemos los adc´s
       adc3=analogRead(control3); //Leemos los adc´s
       adc2=analogRead(control2); //Leemos los adc´s
@@ -105,9 +103,10 @@ void loop()
       Serial.println(angulo4);
       break;
     case 2:
+      digitalWrite(ledmodo, LOW);
       if(digitalRead(guardar)==LOW)
       {
-        delay(200);//Antirebote
+        delay(100);//Antirebote
         if(digitalRead(guardar)==LOW)
         {
           
@@ -137,7 +136,7 @@ void loop()
       }
       if(digitalRead(reproducir)==LOW)
       {
-        delay(200); // Antirrebote
+        delay(100); // Antirrebote
         if (digitalRead(reproducir) == LOW) 
         {
           servom1.write(configuraciones[indiceReproduccion].servo1);
