@@ -75,11 +75,13 @@ void loop()
 {
   if(digitalRead(cambiomodo)==LOW)
   {
-    delay(100);
-    if(digitalRead(cambiomodo)==LOW)
+    modo = (modo == 1) ? 2 : 1;
+    // Esperar a que se suelte el botón
+    while (digitalRead(cambiomodo) == LOW)
     {
-      modo = (modo == 1) ? 2 : 1;
+      delay(10);  
     }
+    delay(100);  // Antirebote después de soltar
   }
  
   switch(modo)
@@ -100,57 +102,52 @@ void loop()
       digitalWrite(ledmodo, LOW);
       if(digitalRead(guardar)==LOW)
       {
-        delay(100);//Antirebote
-        if(digitalRead(guardar)==LOW)
+        configuraciones[configuracionActual].servo1 = angulo1;
+        configuraciones[configuracionActual].servo2 = angulo2;
+        configuraciones[configuracionActual].servo3 = angulo3;
+        configuraciones[configuracionActual].servo4 = angulo4;
+        for (int i=0; i<= configuracionActual; i++ )//Indicador de poscicion guardada
         {
-          
-          configuraciones[configuracionActual].servo1 = angulo1;
-          configuraciones[configuracionActual].servo2 = angulo2;
-          configuraciones[configuracionActual].servo3 = angulo3;
-          configuraciones[configuracionActual].servo4 = angulo4;
-
-          for (int i=0; i<= configuracionActual; i++ )//Indicador de poscicion guardada
-          {
-            digitalWrite(ledPin, HIGH);
-            delay(150);
-            digitalWrite(ledPin, LOW);
-            delay(150);
-          }
-          configuracionActual=(configuracionActual +1)%4;
-          Serial.print("Angulo1: ");
-          Serial.print(angulo1);
-          Serial.print(" Angulo2: ");
-          Serial.print(angulo2);
-          Serial.print(" Angulo3: ");
-          Serial.print(angulo3);
-          Serial.print(" Angulo4: ");
-          Serial.println(angulo4);
-      
+          digitalWrite(ledPin, HIGH);
+          delay(150);
+          digitalWrite(ledPin, LOW);
+          delay(150);
         }
+        configuracionActual=(configuracionActual +1)%4;
+        
+        while (digitalRead(guardar) == LOW) //por si se deja apachado el boton
+        {
+          delay(10);
+        }
+        delay(100); 
       }
+      
       if(digitalRead(reproducir)==LOW)
       {
-        delay(100); // Antirrebote
-        if (digitalRead(reproducir) == LOW) 
-        {
-          angulo1=configuraciones[indiceReproduccion].servo1;
-          angulo2=configuraciones[indiceReproduccion].servo2;
-          angulo3=configuraciones[indiceReproduccion].servo3;
-          angulo4=configuraciones[indiceReproduccion].servo4;
-          servom1.write(angulo1);
-          servom2.write(angulo2);
-          servom3.write(angulo3);
-          servom4.write(angulo4);
-          comunicacion(angulo1, angulo2, angulo3, angulo4);
-          for (int i = 0; i <= indiceReproduccion; i++)
-          {
-           digitalWrite(ledPin, HIGH);  
-           delay(150);
-           digitalWrite(ledPin, LOW);
-           delay(150);
-          }
-          indiceReproduccion = (indiceReproduccion + 1) % 4;
+        angulo1 = configuraciones[indiceReproduccion].servo1;
+        angulo2 = configuraciones[indiceReproduccion].servo2;
+        angulo3 = configuraciones[indiceReproduccion].servo3;
+        angulo4 = configuraciones[indiceReproduccion].servo4;
+
+        servom1.write(angulo1);
+        servom2.write(angulo2);
+        servom3.write(angulo3);
+        servom4.write(angulo4);
+        comunicacion(angulo1, angulo2, angulo3, angulo4);
+
+        for (int i = 0; i <= indiceReproduccion; i++) {
+          digitalWrite(ledPin, HIGH);  
+          delay(100);
+          digitalWrite(ledPin, LOW);
+          delay(100);
         }
+
+        indiceReproduccion = (indiceReproduccion + 1) % 4;
+
+        while (digitalRead(reproducir) == LOW) {
+          delay(10);
+        }
+        delay(100); // antirrebote
       }
       break;
   }
