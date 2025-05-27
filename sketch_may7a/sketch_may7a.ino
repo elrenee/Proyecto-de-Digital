@@ -45,6 +45,11 @@ Servo servom2;
 Servo servom3;
 Servo servom4;
 
+int leerAngulo(const int pinADC)
+{
+  int valorADC = analogRead(pinADC);
+  return map(valorADC, 0, 1023, 0, 180);
+}
 
 void setup() {
   Serial.begin(9600);//comunicación serial con BuadRate de 9600
@@ -81,14 +86,10 @@ void loop()
   {
     case 1:
       digitalWrite(ledmodo, HIGH);
-      adc1=analogRead(control1); //Leemos los adc´s
-      adc3=analogRead(control3); //Leemos los adc´s
-      adc2=analogRead(control2); //Leemos los adc´s
-      adc4=analogRead(control4); //Leemos los adc´s
-      angulo2=map(adc2,0, 1023, 0, 180);
-      angulo3=map(adc3,0, 1023, 0, 180);
-      angulo4=map(adc4,0, 1023, 0, 180);
-      angulo1=map(adc1,0, 1023, 0, 180);
+      angulo1 = leerAngulo(control1);
+      angulo2 = leerAngulo(control2);
+      angulo3 = leerAngulo(control3);
+      angulo4 = leerAngulo(control4);
       servom1.write(angulo1);
       servom2.write(angulo2);
       servom3.write(angulo3);
