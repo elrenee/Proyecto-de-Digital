@@ -93,14 +93,7 @@ void loop()
       servom2.write(angulo2);
       servom3.write(angulo3);
       servom4.write(angulo4);
-      Serial.print("Angulo1: ");
-      Serial.print(angulo1);
-      Serial.print(" Angulo2: ");
-      Serial.print(angulo2);
-      Serial.print(" Angulo3: ");
-      Serial.print(angulo3);
-      Serial.print(" Angulo4: ");
-      Serial.println(angulo4);
+      comunicacion(angulo1, angulo2, angulo3, angulo4);
       break;
     case 2:
       digitalWrite(ledmodo, LOW);
@@ -139,18 +132,15 @@ void loop()
         delay(100); // Antirrebote
         if (digitalRead(reproducir) == LOW) 
         {
-          servom1.write(configuraciones[indiceReproduccion].servo1);
-          servom2.write(configuraciones[indiceReproduccion].servo2);
-          servom3.write(configuraciones[indiceReproduccion].servo3);
-          servom4.write(configuraciones[indiceReproduccion].servo4);
-          Serial.print("Angulo1: ");
-          Serial.print(configuraciones[indiceReproduccion].servo1);
-          Serial.print(" Angulo2: ");
-          Serial.print(configuraciones[indiceReproduccion].servo2);
-          Serial.print(" Angulo3: ");
-          Serial.print(configuraciones[indiceReproduccion].servo3);
-          Serial.print(" Angulo4: ");
-          Serial.println(configuraciones[indiceReproduccion].servo4);
+          angulo1=configuraciones[indiceReproduccion].servo1;
+          angulo2=configuraciones[indiceReproduccion].servo2;
+          angulo3=configuraciones[indiceReproduccion].servo3;
+          angulo4=configuraciones[indiceReproduccion].servo4;
+          servom1.write(angulo1);
+          servom2.write(angulo2);
+          servom3.write(angulo3);
+          servom4.write(angulo4);
+          comunicacion(angulo1, angulo2, angulo3, angulo4);
           for (int i = 0; i <= indiceReproduccion; i++)
           {
            digitalWrite(ledPin, HIGH);  
@@ -163,4 +153,17 @@ void loop()
       }
       break;
   }
+}
+
+
+void comunicacion(const int angle1, const int angle2, const int angle3, const int angle4)
+{
+  Serial.print("Angulo1: ");
+  Serial.print(angle1);
+  Serial.print(" Angulo2: ");
+  Serial.print(angle2);
+  Serial.print(" Angulo3: ");
+  Serial.print(angle3);
+  Serial.print(" Angulo4: ");
+  Serial.println(angle4);
 }
